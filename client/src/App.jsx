@@ -21,10 +21,16 @@ export const AppContent = () => {
       : 'home';
   });
 
+  const [globalSearch, setGlobalSearch] = useState('');
   const [activeItinerary, setActiveItinerary] = useState(null);
   const [selectedDestinationForPlanner, setSelectedDestinationForPlanner] = useState(null);
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' });
   const [infoModal, setInfoModal] = useState({ isOpen: false, type: 'about' });
+
+  const handleSearch = (query) => {
+    setGlobalSearch(query);
+    navigateTo('explore');
+  };
 
   // Synchronize state with URL hash
   useEffect(() => {
@@ -98,6 +104,8 @@ export const AppContent = () => {
         currentTab={currentTab}
         setTab={navigateTo}
         openAuthModal={openAuthModal}
+        onSearch={handleSearch}
+        setSelectedDestinationForPlanner={setSelectedDestinationForPlanner}
       />
 
       {/* Main View Area */}
@@ -121,6 +129,7 @@ export const AppContent = () => {
           <Explore
             setTab={navigateTo}
             setSelectedDestinationForPlanner={setSelectedDestinationForPlanner}
+            initialSearch={globalSearch}
           />
         )}
 

@@ -5,15 +5,22 @@ import { VIBE_DEFINITIONS } from '../components/VibeSelector.jsx';
 import { CustomSelect } from '../components/CustomSelect.jsx';
 import { api } from '../services/api.js';
 
-export const Explore = ({ setTab, setSelectedDestinationForPlanner }) => {
+export const Explore = ({ setTab, setSelectedDestinationForPlanner, initialSearch = '' }) => {
   const [destinations, setDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearch || '');
   const [activeVibe, setActiveVibe] = useState('All');
   const [activeBudget, setActiveBudget] = useState('All');
   const [sortBy, setSortBy] = useState('popular');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+
+  useEffect(() => {
+    if (initialSearch !== undefined) {
+      setSearchQuery(initialSearch);
+      setCurrentPage(1);
+    }
+  }, [initialSearch]);
 
   useEffect(() => {
     const fetchDests = async () => {
