@@ -8,9 +8,9 @@ export const getHotels = async (req, res) => {
 
     if (destination) {
       where.OR = [
-        { destinationName: { contains: destination } },
-        { city: { contains: destination } },
-        { state: { contains: destination } }
+        { destinationName: { contains: destination, mode: 'insensitive' } },
+        { city: { contains: destination, mode: 'insensitive' } },
+        { state: { contains: destination, mode: 'insensitive' } }
       ];
     }
 
@@ -25,9 +25,9 @@ export const getHotels = async (req, res) => {
     if (search) {
       where.OR = [
         ...(where.OR || []),
-        { name: { contains: search } },
-        { city: { contains: search } },
-        { location: { contains: search } }
+        { name: { contains: search, mode: 'insensitive' } },
+        { city: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } }
       ];
     }
 
@@ -81,17 +81,17 @@ export const getVehicles = async (req, res) => {
 
     if (city) {
       where.OR = [
-        { city: { contains: city } },
-        { state: { contains: city } }
+        { city: { contains: city, mode: 'insensitive' } },
+        { state: { contains: city, mode: 'insensitive' } }
       ];
     }
 
     if (type) {
-      where.type = { contains: type };
+      where.type = { contains: type, mode: 'insensitive' };
     }
 
     if (fuelType) {
-      where.fuelType = { contains: fuelType };
+      where.fuelType = { contains: fuelType, mode: 'insensitive' };
     }
 
     if (maxPrice && !isNaN(Number(maxPrice))) {

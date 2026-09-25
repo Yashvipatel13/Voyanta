@@ -7,7 +7,8 @@ export const getReviews = async (req, res) => {
     const reviews = await prisma.review.findMany({
       where: {
         destinationName: {
-          contains: destinationName
+          contains: destinationName,
+          mode: 'insensitive'
         }
       },
       orderBy: { createdAt: 'desc' }

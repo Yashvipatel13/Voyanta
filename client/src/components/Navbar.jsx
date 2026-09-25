@@ -12,8 +12,10 @@ export const Navbar = ({ currentTab, setTab, openAuthModal }) => {
     { id: 'home', label: 'Home' },
     { id: 'planner', label: 'AI Trip Planner' },
     { id: 'explore', label: 'Explore Vibes' },
+    { id: 'hotels', label: 'Stays & Hotels' },
     { id: 'vehicles', label: 'Vehicle Rentals' },
   ];
+
 
   const authNavItems = [
     { id: 'saved', label: 'Saved Trips', icon: Bookmark },

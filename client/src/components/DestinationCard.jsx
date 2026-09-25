@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Heart, Sparkles, MapPin, ArrowRight } from 'lucide-react';
+import { Heart, Sparkles, MapPin, ArrowRight, Star } from 'lucide-react';
+import { DestinationReviewsModal } from './DestinationReviewsModal.jsx';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
-export const DestinationCard = ({ destination, onPlanTrip, isWishlisted = false, onWishlistToggle }) => {
+export const DestinationCard = ({ destination, onPlanTrip, isWishlisted = false, onWishlistToggle, openAuthModal }) => {
   const { isAuthenticated } = useAuth();
   const [saved, setSaved] = useState(isWishlisted);
   const [saving, setSaving] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
+
 
   const handleHeartClick = async (e) => {
     e.stopPropagation();
@@ -92,11 +95,27 @@ export const DestinationCard = ({ destination, onPlanTrip, isWishlisted = false,
       {/* Content Body */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
         <div className="space-y-1.5">
-          {/* Location Meta */}
-          <div className="flex items-center gap-1 text-xs text-slate-400 font-medium">
-            <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-            <span>{destination.state ? `${destination.state}, ${destination.country}` : destination.country}</span>
+          {/* Location Meta & Review Badge */}
+          <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <div className="flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+              <span>{destination.state ? `${destination.state}, ${destination.country}` : destination.country}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowReviews(true);
+              }}
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded-md border border-amber-200/60 transition-colors"
+              title="View & Submit Community Reviews"
+            >
+              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+              <span>{destination.rating || 4.8}</span>
+            </button>
           </div>
+
 
           {/* Destination Title */}
           <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
@@ -150,6 +169,17 @@ export const DestinationCard = ({ destination, onPlanTrip, isWishlisted = false,
           </button>
         </div>
       </div>
+
+      {/* Community Reviews Modal */}
+      {showReviews && (
+        <DestinationReviewsModal
+          isOpen={showReviews}
+          onClose={() => setShowReviews(false)}
+          destinationName={destination.name}
+          openAuthModal={openAuthModal}
+        />
+      )}
     </div>
   );
 };
+

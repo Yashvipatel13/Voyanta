@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, DollarSign, Bookmark, ArrowLeft, Check, AlertTriangle, ShieldCheck, Sparkles, Share2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, DollarSign, Bookmark, ArrowLeft, Check, AlertTriangle, ShieldCheck, Sparkles, Share2, Receipt } from 'lucide-react';
+
 import { InteractiveMap } from '../components/InteractiveMap.jsx';
 import { WeatherAlertBanner } from '../components/WeatherAlertBanner.jsx';
 import { BudgetBreakdownCard } from '../components/BudgetBreakdownCard.jsx';
+import { TripToolsModal } from '../components/TripToolsModal.jsx';
+import { BudgetOptimizerModal } from '../components/BudgetOptimizerModal.jsx';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -13,6 +16,9 @@ export const ItineraryView = ({ itinerary, onBackToPlanner, openAuthModal, setTa
   const [weatherData, setWeatherData] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isTripToolsOpen, setIsTripToolsOpen] = useState(false);
+  const [isBudgetOptimizerOpen, setIsBudgetOptimizerOpen] = useState(false);
+
 
   useEffect(() => {
     setCurrentItinerary(itinerary);
@@ -128,7 +134,27 @@ export const ItineraryView = ({ itinerary, onBackToPlanner, openAuthModal, setTa
           <span>Back to Planner</span>
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* AI Budget Optimizer */}
+          <button
+            onClick={() => setIsBudgetOptimizerOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 hover:border-amber-300 text-amber-900 shadow-xs transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span>AI Budget Optimizer</span>
+          </button>
+
+          {/* Trip Tools (Expenses & Checklist) */}
+          {currentItinerary.id && (
+            <button
+              onClick={() => setIsTripToolsOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-50 border border-blue-200/80 hover:border-blue-300 text-blue-700 shadow-xs transition-colors"
+            >
+              <Receipt className="w-3.5 h-3.5 text-blue-600" />
+              <span>Trip Tools</span>
+            </button>
+          )}
+
           {saveSuccess ? (
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
               <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -311,6 +337,35 @@ export const ItineraryView = ({ itinerary, onBackToPlanner, openAuthModal, setTa
 
       </div>
 
+      {/* Trip Tools Modal (Expenses Ledger & Smart Packing Checklist) */}
+      {isTripToolsOpen && (
+        <TripToolsModal
+          isOpen={isTripToolsOpen}
+          onClose={() => setIsTripToolsOpen(false)}
+          trip={currentItinerary}
+        />
+      )}
+
+      {/* AI Budget Optimizer Modal */}
+      {isBudgetOptimizerOpen && (
+        <BudgetOptimizerModal
+          isOpen={isBudgetOptimizerOpen}
+          onClose={() => setIsBudgetOptimizerOpen(false)}
+          trip={currentItinerary}
+          onApplyOptimizations={({ newBudget }) => {
+            setCurrentItinerary(prev => ({
+              ...prev,
+              targetBudget: newBudget,
+              budgetBreakdown: prev.budgetBreakdown ? {
+                ...prev.budgetBreakdown,
+                targetBudget: newBudget
+              } : prev.budgetBreakdown
+            }));
+          }}
+        />
+      )}
+
     </div>
   );
 };
+

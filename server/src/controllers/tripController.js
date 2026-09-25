@@ -281,7 +281,9 @@ export const getUserTrips = async (req, res) => {
           include: {
             activities: true
           }
-        }
+        },
+        expenses: true,
+        checklists: true
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -303,7 +305,9 @@ export const getTripById = async (req, res) => {
           include: {
             activities: true
           }
-        }
+        },
+        expenses: true,
+        checklists: true
       }
     });
 

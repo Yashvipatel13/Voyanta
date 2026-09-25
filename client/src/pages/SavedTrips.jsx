@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Bookmark, Calendar, Users, Trash2, ArrowRight, Compass, Sparkles } from 'lucide-react';
+import { Bookmark, Calendar, Users, Trash2, ArrowRight, Compass, Sparkles, Receipt } from 'lucide-react';
+import { TripToolsModal } from '../components/TripToolsModal.jsx';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -8,6 +9,8 @@ export const SavedTrips = ({ onOpenSavedTrip, setTab }) => {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedTripForTools, setSelectedTripForTools] = useState(null);
+
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -162,9 +165,24 @@ export const SavedTrips = ({ onOpenSavedTrip, setTab }) => {
                     <span className="text-sm font-bold text-slate-900">₹{Number(trip.totalEstimatedCost || 0).toLocaleString()}</span>
                   </div>
 
-                  <div className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 group-hover:text-blue-700">
-                    <span>View Itinerary</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTripForTools(trip);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
+                      title="Open Expense Ledger & Packing Checklist"
+                    >
+                      <Receipt className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Trip Tools</span>
+                    </button>
+
+                    <div className="inline-flex items-center gap-1 text-xs font-semibold text-slate-700 group-hover:text-blue-600 transition-colors">
+                      <span>View</span>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -172,6 +190,16 @@ export const SavedTrips = ({ onOpenSavedTrip, setTab }) => {
           })}
         </div>
       )}
+
+      {/* Trip Tools Modal (Expenses Ledger & Smart Packing Checklist) */}
+      {selectedTripForTools && (
+        <TripToolsModal
+          isOpen={!!selectedTripForTools}
+          onClose={() => setSelectedTripForTools(null)}
+          trip={selectedTripForTools}
+        />
+      )}
     </div>
   );
 };
+

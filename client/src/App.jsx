@@ -11,15 +11,17 @@ import { SavedTrips } from './pages/SavedTrips.jsx';
 import { Wishlist } from './pages/Wishlist.jsx';
 import { Profile } from './pages/Profile.jsx';
 import { Vehicles } from './pages/Vehicles.jsx';
+import { Hotels } from './pages/Hotels.jsx';
 import { Compass, Twitter, Instagram, Youtube, Globe, Heart } from 'lucide-react';
 
 export const AppContent = () => {
   const [currentTab, setCurrentTab] = useState(() => {
     const hash = window.location.hash.replace('#', '');
-    return ['home', 'planner', 'explore', 'vehicles', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)
+    return ['home', 'planner', 'explore', 'hotels', 'vehicles', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)
       ? hash
       : 'home';
   });
+
 
   const [activeItinerary, setActiveItinerary] = useState(null);
   const [selectedDestinationForPlanner, setSelectedDestinationForPlanner] = useState(null);
@@ -30,13 +32,14 @@ export const AppContent = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['home', 'planner', 'explore', 'vehicles', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)) {
+      if (['home', 'planner', 'explore', 'hotels', 'vehicles', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)) {
         setCurrentTab(hash);
       }
     };
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
 
   const navigateTo = (tab) => {
     setCurrentTab(tab);
@@ -124,12 +127,20 @@ export const AppContent = () => {
           />
         )}
 
+        {currentTab === 'hotels' && (
+          <Hotels
+            setTab={navigateTo}
+            openAuthModal={openAuthModal}
+          />
+        )}
+
         {currentTab === 'vehicles' && (
           <Vehicles
             setTab={navigateTo}
             openAuthModal={openAuthModal}
           />
         )}
+
 
         {currentTab === 'itinerary' && (
           <ItineraryView

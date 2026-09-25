@@ -90,13 +90,20 @@ export const addExpense = async (req, res) => {
 
     res.status(201).json({
       message: 'Expense added successfully',
-      expense
+      expense,
+      id: expense.id,
+      category: expense.category,
+      amount: expense.amount,
+      description: expense.description,
+      date: expense.date,
+      tripId: expense.tripId
     });
   } catch (err) {
     console.error('Error adding expense:', err);
     res.status(500).json({ error: 'Failed to add expense.' });
   }
 };
+
 
 export const deleteExpense = async (req, res) => {
   try {
@@ -145,6 +152,7 @@ export const getChecklists = async (req, res) => {
     res.json({
       tripId,
       items,
+      checklists: items,
       totalCount,
       completedCount,
       progressPercentage
@@ -338,6 +346,7 @@ export const autoGenerateChecklist = async (req, res) => {
       message: `Generated ${toCreate.length} smart packing items based on ${trip.destinationName} profile.`,
       addedCount: toCreate.length,
       items: allItems,
+      checklists: allItems,
       totalCount: allItems.length,
       completedCount: allItems.filter(i => i.completed).length
     });

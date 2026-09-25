@@ -224,5 +224,97 @@ export const api = {
   async getHotelById(id) {
     const res = await fetch(`${API_BASE}/hotels/${id}`);
     return handleResponse(res, 'Failed to fetch hotel details');
+  },
+
+  // Trip Tools: Expenses
+  async getExpenses(tripId) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/expenses`, {
+      headers: getHeaders()
+    });
+    return handleResponse(res, 'Failed to fetch trip expenses');
+  },
+
+  async addExpense(tripId, data) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/expenses`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return handleResponse(res, 'Failed to add expense');
+  },
+
+  async deleteExpense(tripId, expenseId) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/expenses/${expenseId}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    return handleResponse(res, 'Failed to delete expense');
+  },
+
+  // Trip Tools: Packing Checklists
+  async getChecklists(tripId) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/checklists`, {
+      headers: getHeaders()
+    });
+    return handleResponse(res, 'Failed to fetch checklists');
+  },
+
+  async addChecklistItem(tripId, data) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/checklists`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return handleResponse(res, 'Failed to add checklist item');
+  },
+
+  async toggleChecklistItem(tripId, itemId) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/checklists/${itemId}/toggle`, {
+      method: 'PUT',
+      headers: getHeaders()
+    });
+    return handleResponse(res, 'Failed to toggle checklist item');
+  },
+
+  async deleteChecklistItem(tripId, itemId) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/checklists/${itemId}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    return handleResponse(res, 'Failed to delete checklist item');
+  },
+
+  async autoGenerateChecklist(tripId) {
+    const res = await fetch(`${API_BASE}/trips/${tripId}/checklists/auto-generate`, {
+      method: 'POST',
+      headers: getHeaders()
+    });
+    return handleResponse(res, 'Failed to auto-generate checklist');
+  },
+
+  // AI Budget Optimizer Engine
+  async optimizeBudget(data) {
+    const res = await fetch(`${API_BASE}/trips/optimize-budget`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return handleResponse(res, 'Failed to optimize budget');
+  },
+
+  // Community Reviews & Ratings
+  async getReviews(destinationName) {
+    const res = await fetch(`${API_BASE}/destinations/${encodeURIComponent(destinationName)}/reviews`);
+    return handleResponse(res, 'Failed to fetch reviews');
+  },
+
+  async createReview(destinationName, data) {
+    const res = await fetch(`${API_BASE}/destinations/${encodeURIComponent(destinationName)}/reviews`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return handleResponse(res, 'Failed to submit review');
   }
 };
+
