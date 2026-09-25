@@ -3,14 +3,15 @@ import { prisma } from '../prisma/client.js';
 
 export const getRecommendations = async (req, res) => {
   try {
-    const { budget, durationDays, travelers, season, travelStyle, vibes } = req.body;
+    const { budget, budgetTier, durationDays, travelers, season, travelStyle, vibes } = req.body;
+    const userBudget = budget || budgetTier;
 
-    if (!budget || !vibes || vibes.length === 0) {
+    if (!userBudget || !vibes || vibes.length === 0) {
       return res.status(400).json({ error: 'Budget and at least one vibe preference are required.' });
     }
 
     const prediction = mlEngine.predict({
-      budget,
+      budget: userBudget,
       durationDays: Number(durationDays) || 5,
       travelers: Number(travelers) || 2,
       season: season || 'Spring',

@@ -29,35 +29,47 @@ const INDOOR_REPLACEMENTS = [
 
 export const getWeather = async (req, res) => {
   try {
-    const { city = 'Kyoto' } = req.query;
+    const { city = 'Leh' } = req.query;
 
-    // Realistic seasonal dynamic weather simulator (reliable offline / no external API key needed)
-    // Supports triggering a simulated rain/storm alert on Day 2 to showcase smart adaptation
-    const conditions = ['Partly Cloudy', 'Light Rain', 'Sunny', 'Thunderstorm', 'Breezy & Clear'];
-    const selectedCondition = city.toLowerCase().includes('reykjavik') 
-      ? 'Chilly Mist'
-      : city.toLowerCase().includes('bali')
-      ? 'Tropical Sunshine'
-      : 'Passing Showers';
+    const lowerCity = city.toLowerCase();
+    let selectedCondition = 'Pleasant & Sunny';
+    let temp = 24;
 
-    const temp = city.toLowerCase().includes('swiss') ? 14 : city.toLowerCase().includes('goa') ? 31 : 22;
+    if (lowerCity.includes('leh') || lowerCity.includes('ladakh')) {
+      selectedCondition = 'Clear Skies & Crisp Air';
+      temp = 14;
+    } else if (lowerCity.includes('spiti') || lowerCity.includes('manali') || lowerCity.includes('gulmarg')) {
+      selectedCondition = 'Chilly Mountain Breeze';
+      temp = 16;
+    } else if (lowerCity.includes('goa') || lowerCity.includes('andaman') || lowerCity.includes('gokarna')) {
+      selectedCondition = 'Tropical Sunshine';
+      temp = 31;
+    } else if (lowerCity.includes('coorg') || lowerCity.includes('munnar') || lowerCity.includes('shillong')) {
+      selectedCondition = 'Misty & Pleasant';
+      temp = 21;
+    } else if (lowerCity.includes('udaipur') || lowerCity.includes('jaipur') || lowerCity.includes('varanasi')) {
+      selectedCondition = 'Warm & Sunny';
+      temp = 29;
+    }
 
     const forecast = [
-      { day: 1, temp: temp, condition: 'Sunny & Pleasant', alert: null },
-      { day: 2, temp: temp - 3, condition: 'Heavy Rain & Thunderstorm', alert: 'Thunderstorm & Heavy Rain expected. Outdoor activities are unsafe.' },
-      { day: 3, temp: temp + 1, condition: 'Partly Cloudy', alert: null },
-      { day: 4, temp: temp, condition: 'Clear Sky', alert: null }
+      { day: 1, temp: temp, condition: selectedCondition, alert: null },
+      { day: 2, temp: temp - 3, condition: 'Heavy Rain & Mountain Thunderstorm', alert: 'Thunderstorm & Heavy Showers expected. Outdoor activities are unsafe.' },
+      { day: 3, temp: temp + 1, condition: 'Partly Cloudy & Breezy', alert: null },
+      { day: 4, temp: temp, condition: 'Clear Sky & Sunshine', alert: null }
     ];
 
     res.json({
       city,
+      condition: selectedCondition,
+      temperature: `${temp}°C`,
       current: {
         temp: `${temp}°C`,
         condition: selectedCondition,
-        humidity: '68%',
-        windSpeed: '14 km/h',
-        uvIndex: 'Moderate (4)',
-        feelsLike: `${temp + 1}°C`
+        humidity: '58%',
+        windSpeed: '12 km/h',
+        uvIndex: 'Moderate (5)',
+        feelsLike: `${temp}°C`
       },
       forecast,
       activeAlert: {
