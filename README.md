@@ -53,13 +53,20 @@
   - 🎟️ **Activities & Sightseeing**
 - Real-time progress bar comparing estimated cost against user's target budget, warning if plans exceed limits.
 
-### 8. 🗺️ Travel Information & Maps
+### 8. 🚗 Vehicle Rentals & Transit Module
+- **Curated Fleet across Indian Hubs**: Royal Enfield Himalayan 450 & Classic 350 for mountain passes (Leh, Manali), Mahindra Thar 4x4 & Scorpio-N, Honda Activa 6G scooters for Goa & Pondicherry, Maruti Swift, and Hyundai Creta.
+- **Specifications & Transmissions**: Seating capacity, fuel type (Petrol, Diesel, EV), manual/automatic gearboxes, and live daily rates in ₹.
+- **Self-Drive & Chauffeur Options**: Interactive booking modal with dynamic rental day calculations, optional chauffeur guide allowance (+₹800/day), and zero-deposit reservation flow.
+- **REST API Endpoints**: Filter by destination city, category, and budget cap (`/api/vehicles?city=Leh&type=SUV`).
+
+### 9. 🗺️ Travel Information & Maps
 - Embedded Leaflet dark-themed map with custom numbered pins corresponding to the day's itinerary stops.
 - Interactive popups with location details, cost, and route polyline preview.
 
-### 9. ❤️ User Data
+### 10. ❤️ User Data
 - **Saved Trips**: Full persistence of custom generated itineraries in the database with instant reloading.
 - **Wishlist**: Bookmark destinations from the explore page.
+- **Notification Center**: Real-time travel alerts, route forecasts, and budget updates.
 
 ---
 

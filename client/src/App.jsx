@@ -10,12 +10,13 @@ import { ItineraryView } from './pages/ItineraryView.jsx';
 import { SavedTrips } from './pages/SavedTrips.jsx';
 import { Wishlist } from './pages/Wishlist.jsx';
 import { Profile } from './pages/Profile.jsx';
+import { Vehicles } from './pages/Vehicles.jsx';
 import { Compass, Twitter, Instagram, Youtube, Globe, Heart } from 'lucide-react';
 
 export const AppContent = () => {
   const [currentTab, setCurrentTab] = useState(() => {
     const hash = window.location.hash.replace('#', '');
-    return ['home', 'planner', 'explore', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)
+    return ['home', 'planner', 'explore', 'vehicles', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)
       ? hash
       : 'home';
   });
@@ -29,7 +30,7 @@ export const AppContent = () => {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '');
-      if (['home', 'planner', 'explore', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)) {
+      if (['home', 'planner', 'explore', 'vehicles', 'itinerary', 'saved', 'wishlist', 'profile'].includes(hash)) {
         setCurrentTab(hash);
       }
     };
@@ -120,6 +121,13 @@ export const AppContent = () => {
           <Explore
             setTab={navigateTo}
             setSelectedDestinationForPlanner={setSelectedDestinationForPlanner}
+          />
+        )}
+
+        {currentTab === 'vehicles' && (
+          <Vehicles
+            setTab={navigateTo}
+            openAuthModal={openAuthModal}
           />
         )}
 
@@ -234,6 +242,11 @@ export const AppContent = () => {
                 <li>
                   <a href="#explore" onClick={(e) => { e.preventDefault(); navigateTo('explore'); }} className="hover:text-slate-900 transition-colors">
                     Explore Destinations
+                  </a>
+                </li>
+                <li>
+                  <a href="#vehicles" onClick={(e) => { e.preventDefault(); navigateTo('vehicles'); }} className="hover:text-slate-900 transition-colors">
+                    Vehicle Rentals
                   </a>
                 </li>
               </ul>

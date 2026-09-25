@@ -1,11 +1,44 @@
 const API_BASE = '/api';
 
-const getHeaders = () => {
+const getHeaders = (extraHeaders = {}) => {
   const token = localStorage.getItem('voyanta_token');
   return {
     'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` })
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...extraHeaders
   };
+};
+
+const handleResponse = async (res, defaultErrMsg = 'Request failed') => {
+  let data = null;
+  const contentType = res.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
+  } else {
+    try {
+      const text = await res.text();
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { message: text };
+        }
+      }
+    } catch {
+      data = null;
+    }
+  }
+
+  if (!res.ok) {
+    const errorMsg = data?.error || data?.message || (res.status >= 500 ? `Server error (${res.status}). Please check backend connection.` : `${defaultErrMsg} (${res.status})`);
+    throw new Error(errorMsg);
+  }
+
+  return data;
 };
 
 export const api = {
@@ -16,11 +49,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Registration failed');
-    }
-    return res.json();
+    return handleResponse(res, 'Registration failed');
   },
 
   async login(data) {
@@ -29,19 +58,14 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Login failed');
-    }
-    return res.json();
+    return handleResponse(res, 'Login failed');
   },
 
   async getProfile() {
     const res = await fetch(`${API_BASE}/auth/profile`, {
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to fetch profile');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch profile');
   },
 
   async updateProfile(data) {
@@ -50,8 +74,7 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to update profile');
-    return res.json();
+    return handleResponse(res, 'Failed to update profile');
   },
 
   // ML Recommendations
@@ -61,25 +84,19 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params)
     });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Failed to get recommendations');
-    }
-    return res.json();
+    return handleResponse(res, 'Failed to get recommendations');
   },
 
   // Destinations
   async getDestinations(filter = {}) {
     const query = new URLSearchParams(filter).toString();
     const res = await fetch(`${API_BASE}/destinations${query ? `?${query}` : ''}`);
-    if (!res.ok) throw new Error('Failed to fetch destinations');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch destinations');
   },
 
   async getDestinationByName(name) {
     const res = await fetch(`${API_BASE}/destinations/${encodeURIComponent(name)}`);
-    if (!res.ok) throw new Error('Failed to fetch destination');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch destination');
   },
 
   // Trip Itinerary
@@ -89,8 +106,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to generate trip');
-    return res.json();
+    return handleResponse(res, 'Failed to generate trip');
   },
 
   async saveTrip(data) {
@@ -99,22 +115,19 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to save trip');
-    return res.json();
+    return handleResponse(res, 'Failed to save trip');
   },
 
   async getUserTrips() {
     const res = await fetch(`${API_BASE}/trips/my-trips`, {
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to fetch saved trips');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch saved trips');
   },
 
   async getTripById(id) {
     const res = await fetch(`${API_BASE}/trips/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch trip');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch trip');
   },
 
   async deleteTrip(id) {
@@ -122,15 +135,13 @@ export const api = {
       method: 'DELETE',
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to delete trip');
-    return res.json();
+    return handleResponse(res, 'Failed to delete trip');
   },
 
   // Weather & Smart Adaptation
   async getWeather(city) {
     const res = await fetch(`${API_BASE}/weather?city=${encodeURIComponent(city || 'Kyoto')}`);
-    if (!res.ok) throw new Error('Failed to fetch weather');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch weather');
   },
 
   async adaptActivity(data) {
@@ -139,8 +150,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error('Failed to adapt activity');
-    return res.json();
+    return handleResponse(res, 'Failed to adapt activity');
   },
 
   // Wishlist
@@ -148,8 +158,7 @@ export const api = {
     const res = await fetch(`${API_BASE}/wishlist`, {
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to fetch wishlist');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch wishlist');
   },
 
   async toggleWishlist(destinationId) {
@@ -158,8 +167,7 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify({ destinationId })
     });
-    if (!res.ok) throw new Error('Failed to toggle wishlist');
-    return res.json();
+    return handleResponse(res, 'Failed to toggle wishlist');
   },
 
   // Notifications
@@ -167,8 +175,7 @@ export const api = {
     const res = await fetch(`${API_BASE}/notifications`, {
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to fetch notifications');
-    return res.json();
+    return handleResponse(res, 'Failed to fetch notifications');
   },
 
   async markNotificationRead(id) {
@@ -176,8 +183,7 @@ export const api = {
       method: 'PUT',
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to mark notification read');
-    return res.json();
+    return handleResponse(res, 'Failed to mark notification read');
   },
 
   async markAllNotificationsRead() {
@@ -185,8 +191,7 @@ export const api = {
       method: 'PUT',
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to mark all notifications read');
-    return res.json();
+    return handleResponse(res, 'Failed to mark all notifications read');
   },
 
   async deleteNotification(id) {
@@ -194,7 +199,30 @@ export const api = {
       method: 'DELETE',
       headers: getHeaders()
     });
-    if (!res.ok) throw new Error('Failed to delete notification');
-    return res.json();
+    return handleResponse(res, 'Failed to delete notification');
+  },
+
+  // Vehicles & Rentals
+  async getVehicles(filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${API_BASE}/vehicles${query ? `?${query}` : ''}`);
+    return handleResponse(res, 'Failed to fetch vehicles');
+  },
+
+  async getVehicleById(id) {
+    const res = await fetch(`${API_BASE}/vehicles/${id}`);
+    return handleResponse(res, 'Failed to fetch vehicle details');
+  },
+
+  // Hotels
+  async getHotels(filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${API_BASE}/hotels${query ? `?${query}` : ''}`);
+    return handleResponse(res, 'Failed to fetch hotels');
+  },
+
+  async getHotelById(id) {
+    const res = await fetch(`${API_BASE}/hotels/${id}`);
+    return handleResponse(res, 'Failed to fetch hotel details');
   }
 };
