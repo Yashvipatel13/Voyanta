@@ -1,84 +1,69 @@
 import React from 'react';
-import { Trees, Compass, Landmark, Palmtree, Utensils, Sparkles, Coffee } from 'lucide-react';
+import { Trees, Compass, Landmark, Palmtree, Utensils, Sparkles, Coffee, Check } from 'lucide-react';
 
 export const VIBE_DEFINITIONS = [
   {
     name: 'Nature & Peace',
     icon: Trees,
-    color: 'emerald',
-    gradient: 'from-emerald-500/20 to-teal-500/20',
-    border: 'border-emerald-500/40',
-    activeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-400',
-    desc: 'Quiet forests, misty lakes, mountain sanctuaries, and tranquil retreats.'
+    desc: 'Quiet forests, lakes, mountains and more.',
+    image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Adventure',
     icon: Compass,
-    color: 'sky',
-    gradient: 'from-sky-500/20 to-cyan-500/20',
-    border: 'border-sky-500/40',
-    activeBg: 'bg-sky-500/20 text-sky-300 border-sky-400',
-    desc: 'Trekking, canyon descents, rafting, and adrenaline-pumping expeditions.'
+    desc: 'Trekking, rafting, canyoning and more.',
+    image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Culture & History',
     icon: Landmark,
-    color: 'amber',
-    gradient: 'from-amber-500/20 to-orange-500/20',
-    border: 'border-amber-500/40',
-    activeBg: 'bg-amber-500/20 text-amber-300 border-amber-400',
-    desc: 'Ancient castles, sacred temples, historic museums, and local folklore.'
+    desc: 'Ancient temples, castles and heritage sites.',
+    image: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Beach & Relaxation',
     icon: Palmtree,
-    color: 'cyan',
-    gradient: 'from-cyan-500/20 to-blue-500/20',
-    border: 'border-cyan-500/40',
-    activeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-400',
-    desc: 'Turquoise seas, palm-fringed sands, coastal sunsets, and breezy hammocks.'
+    desc: 'Turquoise seas, beaches and coastal sunsets.',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Food & Local Experience',
     icon: Utensils,
-    color: 'coral',
-    gradient: 'from-rose-500/20 to-orange-500/20',
-    border: 'border-rose-500/40',
-    activeBg: 'bg-rose-500/20 text-rose-300 border-rose-400',
-    desc: 'Night markets, secret alley eateries, masterclasses, and regional specialties.'
+    desc: 'Local food, markets and hidden gems.',
+    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80',
   },
   {
     name: 'Nightlife',
     icon: Sparkles,
-    color: 'violet',
-    gradient: 'from-purple-500/20 to-pink-500/20',
-    border: 'border-purple-500/40',
-    activeBg: 'bg-purple-500/20 text-purple-300 border-purple-400',
-    desc: 'Rooftop lounges, underground DJ clubs, neon alleys, and vibrant midnight energy.'
+    desc: 'Rooftop lounges, clubs and vibrant city life.',
+    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=80',
   },
   {
-    name: 'Café / Slow Travel',
+    name: 'Café & Slow Travel',
     icon: Coffee,
-    color: 'yellow',
-    gradient: 'from-amber-700/20 to-yellow-600/20',
-    border: 'border-amber-600/40',
-    activeBg: 'bg-amber-600/20 text-amber-200 border-amber-500',
-    desc: 'Third-wave roasteries, cobblestone bookshops, journal writing, and unhurried days.'
+    desc: 'Cafés, bookshops and relaxed itineraries.',
+    image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80',
   }
 ];
 
-export const VibeSelector = ({ selectedVibes = [], onChange, isCompact = false }) => {
+export const VibeSelector = ({ selectedVibes = [], onChange, variant = 'cards', maxSelect = null }) => {
   const toggleVibe = (vibeName) => {
     if (selectedVibes.includes(vibeName)) {
       onChange(selectedVibes.filter(v => v !== vibeName));
     } else {
-      onChange([...selectedVibes, vibeName]);
+      if (maxSelect && selectedVibes.length >= maxSelect) {
+        // Replace oldest or cap
+        onChange([...selectedVibes.slice(1), vibeName]);
+      } else {
+        onChange([...selectedVibes, vibeName]);
+      }
     }
   };
 
-  if (isCompact) {
+  // 1. Compact Pill Badges (for quick filter strips)
+  if (variant === 'compact') {
     return (
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {VIBE_DEFINITIONS.map(vibe => {
           const isSelected = selectedVibes.includes(vibe.name);
           const Icon = vibe.icon;
@@ -87,13 +72,13 @@ export const VibeSelector = ({ selectedVibes = [], onChange, isCompact = false }
               key={vibe.name}
               type="button"
               onClick={() => toggleVibe(vibe.name)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 isSelected
-                  ? vibe.activeBg + ' shadow-xs scale-105'
-                  : 'bg-surface-card/60 text-slate-300 border-surface-border hover:border-slate-500 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
-              <Icon className="w-3.5 h-3.5" />
+              <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
               <span>{vibe.name}</span>
             </button>
           );
@@ -102,8 +87,60 @@ export const VibeSelector = ({ selectedVibes = [], onChange, isCompact = false }
     );
   }
 
+  // 2. Photo Cards Grid (for AI Trip Planner step 2, exactly like Screen 2 in demo)
+  if (variant === 'photo-cards') {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+        {VIBE_DEFINITIONS.map((vibe) => {
+          const isSelected = selectedVibes.includes(vibe.name);
+          return (
+            <div
+              key={vibe.name}
+              onClick={() => toggleVibe(vibe.name)}
+              className={`group relative rounded-xl overflow-hidden border cursor-pointer select-none transition-all duration-200 bg-white ${
+                isSelected
+                  ? 'border-blue-600 ring-2 ring-blue-600/20 shadow-sm'
+                  : 'border-slate-200 hover:border-slate-300 hover:shadow-sm'
+              }`}
+            >
+              {/* Photo Thumbnail */}
+              <div className="relative h-24 sm:h-28 w-full overflow-hidden bg-slate-100">
+                <img
+                  src={vibe.image}
+                  alt={vibe.name}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                
+                {/* Selection Indicator in top-right */}
+                <div className="absolute top-2 right-2">
+                  <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
+                    isSelected ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/90 border border-slate-300 text-transparent'
+                  }`}>
+                    <Check className="w-3 h-3 stroke-[3]" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Title & Desc */}
+              <div className="p-2.5 space-y-0.5">
+                <h4 className="text-xs font-bold text-slate-900 leading-tight">
+                  {vibe.name}
+                </h4>
+                <p className="text-[11px] text-slate-500 leading-normal line-clamp-2">
+                  {vibe.desc}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // 3. Default Clean Horizontal Selection Cards (as on Home page "Pick Your Travel Vibe")
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
       {VIBE_DEFINITIONS.map((vibe) => {
         const isSelected = selectedVibes.includes(vibe.name);
         const Icon = vibe.icon;
@@ -111,33 +148,32 @@ export const VibeSelector = ({ selectedVibes = [], onChange, isCompact = false }
           <div
             key={vibe.name}
             onClick={() => toggleVibe(vibe.name)}
-            className={`cursor-pointer p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between select-none ${
+            className={`p-3.5 rounded-xl border cursor-pointer select-none transition-all duration-150 flex flex-col items-center text-center justify-between gap-2.5 ${
               isSelected
-                ? `${vibe.activeBg} ring-1 ring-offset-0 scale-[1.02] shadow-lg`
-                : 'bg-surface-card/40 border-surface-border hover:bg-surface-card/80 hover:border-slate-600 text-slate-300'
+                ? 'bg-blue-50/80 border-blue-600 text-blue-900 shadow-sm'
+                : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300 hover:bg-slate-50/60'
             }`}
           >
-            <div className="flex items-center justify-between mb-2">
-              <div className={`p-2.5 rounded-lg bg-surface border border-surface-border ${isSelected ? 'text-primary' : 'text-slate-400'}`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                isSelected ? 'bg-primary border-primary text-black' : 'border-slate-600'
-              }`}>
-                {isSelected && (
-                  <svg className="w-3 h-3 text-surface fill-current" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                )}
-              </div>
+            {/* Top Indicator or Icon */}
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+              isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 group-hover:text-slate-900'
+            }`}>
+              <Icon className="w-4.5 h-4.5" />
             </div>
-            <div>
-              <h4 className="text-sm font-bold tracking-tight mb-1 text-white">
+
+            <div className="space-y-1 w-full">
+              <span className={`text-xs font-semibold block leading-tight ${
+                isSelected ? 'text-blue-950 font-bold' : 'text-slate-800'
+              }`}>
                 {vibe.name}
-              </h4>
-              <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                {vibe.desc}
-              </p>
+              </span>
+            </div>
+
+            {/* Checkmark circle */}
+            <div className={`w-4 h-4 rounded-full flex items-center justify-center border text-[9px] ${
+              isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-200 bg-white text-transparent'
+            }`}>
+              <Check className="w-2.5 h-2.5 stroke-[3]" />
             </div>
           </div>
         );

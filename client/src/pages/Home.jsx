@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Compass, Sparkles, CloudRain, Wallet, ArrowRight, MapPin, Shield, CheckCircle, Flame } from 'lucide-react';
-import { VIBE_DEFINITIONS, VibeSelector } from '../components/VibeSelector.jsx';
+import { Compass, Sparkles, CloudSun, Wallet, ArrowRight, Flame, Shield, Check } from 'lucide-react';
+import { VibeSelector } from '../components/VibeSelector.jsx';
 import { DestinationCard } from '../components/DestinationCard.jsx';
 import { api } from '../services/api.js';
 
 export const Home = ({ setTab, setSelectedDestinationForPlanner }) => {
-  const [selectedVibes, setSelectedVibes] = useState(['Nature & Peace', 'Culture & History']);
+  const [selectedVibes, setSelectedVibes] = useState(['Nature & Peace']);
   const [trendingDestinations, setTrendingDestinations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,144 +31,208 @@ export const Home = ({ setTab, setSelectedDestinationForPlanner }) => {
   };
 
   return (
-    <div className="space-y-20 pb-20">
-      {/* Hero Section */}
-      <section className="relative pt-12 sm:pt-20 px-4 max-w-7xl mx-auto text-center">
-        {/* Ambient Glows */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[350px] bg-primary/10 blur-[130px] rounded-full pointer-events-none" />
-        <div className="absolute top-1/3 left-1/4 -translate-x-1/2 w-[300px] h-[250px] bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none" />
+    <div className="space-y-16 sm:space-y-24 pb-20">
+      
+      {/* 1. Hero Section (Editorial Travel Style) */}
+      <section className="pt-8 sm:pt-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          
+          {/* Left Text Column */}
+          <div className="lg:col-span-6 space-y-6">
+            {/* Top Pill Badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
+              <span className="text-blue-600">✦</span>
+              <span>AI-POWERED TRAVEL PLANNING</span>
+            </div>
 
-        <div className="relative z-10 space-y-6 max-w-4xl mx-auto">
-          {/* Top Pill Tag */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface-card border border-surface-border text-xs font-semibold text-slate-300 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-            <span>Random Forest Machine Learning Engine Inside</span>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
+              Travel that fits <br />
+              <span className="text-blue-600">your vibe.</span>
+            </h1>
+
+            {/* Subtitle */}
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl">
+              Voyanta combines AI recommendations, real-time weather adaptation and budget planning to create personalized itineraries for your perfect trip.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <button
+                onClick={() => handleStartPlanning()}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow transition-all duration-150"
+              >
+                <span>Plan my trip</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setTab('explore')}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-medium text-sm bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 transition-colors shadow-xs"
+              >
+                <span>Explore destinations</span>
+              </button>
+            </div>
           </div>
 
-          {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl font-extrabold font-['Outfit'] tracking-tight text-white leading-tight">
-            Stop Planning Generic Trips. <br />
-            Travel by <span className="bg-gradient-to-r from-sky-400 via-indigo-400 to-emerald-400 bg-clip-text text-transparent">Your Vibe</span>.
-          </h1>
+          {/* Right Visual Image Column */}
+          <div className="lg:col-span-6 relative">
+            <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] sm:aspect-[16/11] bg-slate-100">
+              <img
+                src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80"
+                alt="Scenic coastal destination"
+                className="w-full h-full object-cover"
+              />
 
-          <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Voyanta pairs machine learning recommendations with real-time weather adaptation and micro-budget pacing to design intelligent, personalized travel itineraries.
-          </p>
+              {/* Top Handwritten Styled Tag */}
+              <div className="absolute top-5 right-5 rotate-2 select-none pointer-events-none">
+                <div className="bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-xl shadow-md border border-white/60">
+                  <span className="font-handwriting text-slate-800 text-lg font-bold leading-tight block">
+                    Good Trips Brighter You ✨
+                  </span>
+                </div>
+              </div>
 
-          {/* Call to Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => handleStartPlanning()}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-glow-primary transition-all duration-300"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Launch AI Trip Planner</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => setTab('explore')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm bg-surface-card hover:bg-slate-800 border border-surface-border hover:border-slate-600 text-slate-200 transition-colors"
-            >
-              <Compass className="w-4 h-4 text-sky-400" />
-              <span>Explore Destinations</span>
-            </button>
+              {/* Floating Plan Smarter Card on Bottom Left */}
+              <div className="absolute bottom-5 left-5 right-5 sm:right-auto sm:max-w-xs bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-white/80 space-y-2">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 leading-snug">Plan Smarter</h4>
+                  <p className="text-xs text-slate-500">Travel Better • Live the Experience</p>
+                </div>
+                {/* 3 Traveler Avatars */}
+                <div className="flex items-center gap-1.5 pt-1">
+                  <div className="flex -space-x-2 overflow-hidden">
+                    <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Traveler" />
+                    <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Traveler" />
+                    <img className="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Traveler" />
+                  </div>
+                  <span className="text-[11px] font-semibold text-blue-600 pl-1">2,400+ itineraries</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* Interactive Vibe Quick-Filter */}
-        <div className="mt-14 max-w-4xl mx-auto glass-panel p-5 rounded-2xl border border-surface-border text-left">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs uppercase tracking-wider font-bold text-sky-400">
-              Pick Your Travel Mood
-            </span>
-            <span className="text-xs text-slate-400">
-              {selectedVibes.length} vibes active
-            </span>
-          </div>
-          <VibeSelector
-            selectedVibes={selectedVibes}
-            onChange={setSelectedVibes}
-            isCompact={true}
-          />
         </div>
       </section>
 
-      {/* Unique Pillars Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold font-['Outfit'] text-white">
-            Why Voyanta is Built Different
+      {/* 2. Pick Your Travel Vibe Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+            Pick Your Travel Vibe
           </h2>
-          <p className="text-sm text-slate-400 mt-2">
-            Engineered specifically to solve the static, rigid pitfalls of traditional travel portals.
+          <p className="text-sm text-slate-500 mt-1">
+            Tell us what kind of traveler you are. We'll find the perfect destinations.
           </p>
         </div>
 
+        <VibeSelector
+          selectedVibes={selectedVibes}
+          onChange={setSelectedVibes}
+          variant="cards"
+        />
+      </section>
+
+      {/* 3. Why Voyanta (3 Clean Architecture Cards) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Pillar 1 */}
-          <div className="glass-card p-6 rounded-2xl space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-              <Sparkles className="w-6 h-6" />
+          
+          {/* Card 1: Random Forest */}
+          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-card hover:shadow-card-hover transition-all duration-200 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Sparkles className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white">Random Forest ML Recommendations</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Ensemble decision trees evaluate budget, seasonality, party size, and 7 multidimensional vibe vectors to suggest perfect destination matches with transparent explainability.
-            </p>
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-slate-900 leading-snug">
+                Random Forest ML Recommendations
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Recommends destinations based on your vibe, budget, season and travel patterns using ML.
+              </p>
+            </div>
+            <button 
+              onClick={() => handleStartPlanning()}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors pt-1"
+            >
+              <span>Learn more</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Pillar 2 */}
-          <div className="glass-card p-6 rounded-2xl space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-              <CloudRain className="w-6 h-6" />
+          {/* Card 2: Smart Weather */}
+          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-card hover:shadow-card-hover transition-all duration-200 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <CloudSun className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white">Smart Weather-Adaptive Itineraries</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              When rain or extreme weather is forecast, Voyanta detects vulnerable outdoor stops and provides 1-click automated swaps to verified local museums and indoor workshops.
-            </p>
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-slate-900 leading-snug">
+                Smart Weather-Adaptive Itineraries
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Plans routes considering real-time weather, climate and seasonal conditions.
+              </p>
+            </div>
+            <button 
+              onClick={() => handleStartPlanning()}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors pt-1"
+            >
+              <span>Learn more</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Pillar 3 */}
-          <div className="glass-card p-6 rounded-2xl space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <Wallet className="w-6 h-6" />
+          {/* Card 3: 4-Pillar Budget */}
+          <div className="bg-white p-6 sm:p-7 rounded-2xl border border-slate-200/90 shadow-card hover:shadow-card-hover transition-all duration-200 space-y-4">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Wallet className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold text-white">4-Pillar Micro-Budget Pacing</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Dynamic cost calculation across Flights, Stays, Dining, and Activities. Live indicators alert you before your schedule exceeds your planned budget limit.
-            </p>
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-slate-900 leading-snug">
+                4-Pillar Micro-Budget Pacing
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Optimizes costs for stay, food, activities and transit for a balanced, realistic itinerary.
+              </p>
+            </div>
+            <button 
+              onClick={() => handleStartPlanning()}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors pt-1"
+            >
+              <span>Learn more</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
+
         </div>
       </section>
 
-      {/* Trending Destinations Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+      {/* 4. Trending Destinations */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <Flame className="w-5 h-5 text-amber-400" />
-              <h2 className="text-2xl font-bold font-['Outfit'] text-white">
+              <span className="text-lg">🔥</span>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
                 Trending Destinations
               </h2>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Top curated spots matching popular travel vibes
+            <p className="text-sm text-slate-500 mt-1">
+              Popular places that match your travel style.
             </p>
           </div>
 
           <button
             onClick={() => setTab('explore')}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-sky-400 hover:text-sky-300"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
           >
-            <span>View All</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>View all</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-80 rounded-2xl bg-surface-card animate-pulse border border-surface-border" />
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="h-80 rounded-2xl bg-slate-200/70 animate-pulse" />
             ))}
           </div>
         ) : (
@@ -183,6 +247,40 @@ export const Home = ({ setTab, setSelectedDestinationForPlanner }) => {
           </div>
         )}
       </section>
+
+      {/* 5. Bottom Call-to-Action Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative rounded-3xl overflow-hidden bg-slate-900 text-white p-8 sm:p-12 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+          {/* Background image tint */}
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+            <img
+              src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80"
+              alt="Roadtrip"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          <div className="relative z-10 space-y-2 text-center sm:text-left">
+            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight">
+              Not sure where to go?
+            </h3>
+            <p className="text-sm text-slate-300 max-w-md">
+              Let Voyanta AI find the perfect destination tailored to your mood, budget, and season.
+            </p>
+          </div>
+
+          <div className="relative z-10">
+            <button
+              onClick={() => handleStartPlanning()}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-sm bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all whitespace-nowrap"
+            >
+              <span>Try AI Trip Planner</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 };

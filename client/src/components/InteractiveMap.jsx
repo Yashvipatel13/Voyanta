@@ -22,14 +22,21 @@ export const InteractiveMap = ({ activities = [], center = [35.0116, 135.7681], 
         attributionControl: false
       });
 
-      // CartoDB Dark Matter tiles (super clean modern dark travel map)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      // OpenStreetMap tiles (reliable, keyless, clear rendering)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        subdomains: 'abcd'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
       }).addTo(map);
 
       markersLayerRef.current = L.layerGroup().addTo(map);
       mapInstanceRef.current = map;
+
+      // Force recalculation of container size for crisp rendering
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 250);
     }
 
     return () => {
@@ -53,6 +60,11 @@ export const InteractiveMap = ({ activities = [], center = [35.0116, 135.7681], 
 
     if (!isNaN(centerLat) && !isNaN(centerLng)) {
       map.setView([centerLat, centerLng], 12);
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 150);
     }
 
     const latLngs = [];
@@ -71,46 +83,46 @@ export const InteractiveMap = ({ activities = [], center = [35.0116, 135.7681], 
 
       latLngs.push([lat, lng]);
 
-      // Custom HTML Marker Pin
+      // Custom Clean Blue Pin
       const customIcon = L.divIcon({
         className: 'custom-leaflet-marker',
         html: `
           <div style="
-            background: linear-gradient(135deg, #38BDF8, #6366F1);
+            background: #2563EB;
             color: #ffffff;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 11px;
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
             border: 2px solid #ffffff;
           ">
             ${idx + 1}
           </div>
         `,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
+        iconSize: [26, 26],
+        iconAnchor: [13, 13],
         popupAnchor: [0, -14]
       });
 
       const popupContent = `
-        <div style="font-family: sans-serif; min-width: 180px; color: #0f172a; padding: 4px;">
-          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #0284c7; margin-bottom: 2px;">
+        <div style="font-family: inherit; min-width: 170px; color: #0f172a; padding: 2px;">
+          <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #2563eb; margin-bottom: 2px;">
             ${act.timeSlot || `Stop ${idx + 1}`}
           </div>
-          <div style="font-size: 13px; font-weight: 700; margin-bottom: 4px;">
+          <div style="font-size: 13px; font-weight: 700; margin-bottom: 3px; color: #0f172a;">
             ${act.title}
           </div>
-          <div style="font-size: 11px; color: #475569; margin-bottom: 6px;">
+          <div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">
             📍 ${act.location}
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600;">
-            <span>Est: $${act.estimatedCost || 0}</span>
-            <span style="background: ${act.isOutdoor ? '#dcfce7; color: #15803d;' : '#e0e7ff; color: #4338ca;'} padding: 2px 6px; border-radius: 4px; font-size: 10px;">
+            <span style="color: #0f172a;">Est: ₹${act.estimatedCost || 0}</span>
+            <span style="background: ${act.isOutdoor ? '#ecfdf5; color: #059669;' : '#eff6ff; color: #2563eb;'} padding: 2px 6px; border-radius: 4px; font-size: 10px;">
               ${act.isOutdoor ? 'Outdoor' : 'Indoor'}
             </span>
           </div>
@@ -125,21 +137,21 @@ export const InteractiveMap = ({ activities = [], center = [35.0116, 135.7681], 
     // Draw route polyline connecting the day's stops
     if (latLngs.length > 1) {
       L.polyline(latLngs, {
-        color: '#38BDF8',
+        color: '#2563EB',
         weight: 3,
-        opacity: 0.6,
-        dashArray: '6, 8'
+        opacity: 0.7,
+        dashArray: '5, 8'
       }).addTo(markersLayerRef.current);
     }
   }, [activities, center]);
 
   return (
-    <div className="relative w-full h-full min-h-[360px] rounded-xl overflow-hidden border border-surface-border shadow-xl">
-      <div ref={mapContainerRef} className="w-full h-full min-h-[360px]" />
+    <div className="relative w-full h-full min-h-[380px] rounded-2xl overflow-hidden border border-slate-200 shadow-card">
+      <div ref={mapContainerRef} className="w-full h-full min-h-[380px]" />
       
       {/* Overlay Badge */}
-      <div className="absolute top-3 left-3 z-[1000] bg-surface/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-surface-border text-xs font-semibold text-slate-200 flex items-center gap-2 shadow-md">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <div className="absolute top-3 left-3 z-[1000] bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-800 flex items-center gap-2 shadow-sm">
+        <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
         <span>Route Map: {destinationName}</span>
       </div>
     </div>

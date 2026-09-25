@@ -40,6 +40,7 @@ export const register = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        avatar: user.avatar || null,
         preferences: JSON.parse(user.preferences || '{}')
       }
     });
@@ -76,6 +77,7 @@ export const login = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        avatar: user.avatar || null,
         preferences: JSON.parse(user.preferences || '{}')
       }
     });
@@ -93,6 +95,7 @@ export const getProfile = async (req, res) => {
         id: true,
         name: true,
         email: true,
+        avatar: true,
         preferences: true,
         createdAt: true,
         trips: {
@@ -132,18 +135,20 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { name, preferences } = req.body;
+    const { name, preferences, avatar } = req.body;
 
     const updatedUser = await prisma.user.update({
       where: { id: req.user.userId },
       data: {
         ...(name && { name }),
+        ...(avatar !== undefined && { avatar }),
         ...(preferences && { preferences: JSON.stringify(preferences) })
       },
       select: {
         id: true,
         name: true,
         email: true,
+        avatar: true,
         preferences: true
       }
     });

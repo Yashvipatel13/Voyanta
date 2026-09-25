@@ -90,7 +90,7 @@ npx prisma db push
 node src/prisma/seed.js
 npm run dev
 ```
-The server will start on `http://localhost:5000`.
+The server will start on `http://localhost:5001`.
 
 ### 3. Frontend Setup
 ```bash

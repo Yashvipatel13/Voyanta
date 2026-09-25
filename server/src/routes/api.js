@@ -4,6 +4,7 @@ import { getRecommendations, getAllDestinations, getDestinationByName } from '..
 import { generateTripItinerary, saveTrip, getUserTrips, getTripById, deleteTrip } from '../controllers/tripController.js';
 import { getWeather, replaceActivityForWeather } from '../controllers/weatherController.js';
 import { getWishlist, toggleWishlist } from '../controllers/wishlistController.js';
+import { getNotifications, markNotificationRead, markAllNotificationsRead, deleteNotification } from '../controllers/notificationController.js';
 import { authenticateToken, optionalAuth } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -33,5 +34,11 @@ router.post('/weather/adapt-activity', replaceActivityForWeather);
 // Wishlist Module
 router.get('/wishlist', authenticateToken, getWishlist);
 router.post('/wishlist/toggle', authenticateToken, toggleWishlist);
+
+// Notifications Module
+router.get('/notifications', authenticateToken, getNotifications);
+router.put('/notifications/:id/read', authenticateToken, markNotificationRead);
+router.put('/notifications/read-all', authenticateToken, markAllNotificationsRead);
+router.delete('/notifications/:id', authenticateToken, deleteNotification);
 
 export default router;

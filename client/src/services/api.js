@@ -160,5 +160,41 @@ export const api = {
     });
     if (!res.ok) throw new Error('Failed to toggle wishlist');
     return res.json();
+  },
+
+  // Notifications
+  async getNotifications() {
+    const res = await fetch(`${API_BASE}/notifications`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to fetch notifications');
+    return res.json();
+  },
+
+  async markNotificationRead(id) {
+    const res = await fetch(`${API_BASE}/notifications/${id}/read`, {
+      method: 'PUT',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to mark notification read');
+    return res.json();
+  },
+
+  async markAllNotificationsRead() {
+    const res = await fetch(`${API_BASE}/notifications/read-all`, {
+      method: 'PUT',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to mark all notifications read');
+    return res.json();
+  },
+
+  async deleteNotification(id) {
+    const res = await fetch(`${API_BASE}/notifications/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to delete notification');
+    return res.json();
   }
 };
