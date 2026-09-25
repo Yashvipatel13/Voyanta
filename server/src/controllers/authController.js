@@ -18,8 +18,19 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Generate clean readable ID like u1, u2, u3...
+    const userCount = await prisma.user.count();
+    let nextNum = userCount + 1;
+    let customId = `u${nextNum}`;
+    while (await prisma.user.findUnique({ where: { id: customId } })) {
+      nextNum++;
+      customId = `u${nextNum}`;
+    }
+
     const user = await prisma.user.create({
       data: {
+        id: customId,
         name,
         email,
         password: hashedPassword,

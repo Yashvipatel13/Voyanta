@@ -429,16 +429,28 @@ const REVIEWS_DATA = [
 ];
 
 async function main() {
-  console.log('--- Starting Voyanta Database Seeding (India Edition 2026) ---');
+  console.log('--- Starting Voyanta Database Seeding (Clean Readable IDs Edition) ---');
 
-  // 1. Create or update Demo Traveler User (Alex Rivera)
+  // Clean existing tables to ensure all IDs are clean (u1, dest_..., wish_...)
+  console.log('Clearing old records...');
+  await prisma.wishlist.deleteMany();
+  await prisma.activity.deleteMany();
+  await prisma.itineraryDay.deleteMany();
+  await prisma.checklist.deleteMany();
+  await prisma.expense.deleteMany();
+  await prisma.trip.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.review.deleteMany();
+  await prisma.hotel.deleteMany();
+  await prisma.vehicle.deleteMany();
+  await prisma.destination.deleteMany();
+  await prisma.user.deleteMany();
+
+  // 1. Create Demo Users with intuitive IDs: u1 and u2
   const hashedPassword = await bcrypt.hash('voyanta123', 10);
-  const demoUser = await prisma.user.upsert({
-    where: { email: 'traveler@voyanta.com' },
-    update: {
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=400&q=80'
-    },
-    create: {
+  const demoUser = await prisma.user.create({
+    data: {
+      id: 'u1',
       name: 'Alex Rivera',
       email: 'traveler@voyanta.com',
       password: hashedPassword,
@@ -451,28 +463,30 @@ async function main() {
     }
   });
 
-  console.log(`Demo user ready: ${demoUser.name} (${demoUser.email})`);
+  const demoUser2 = await prisma.user.create({
+    data: {
+      id: 'u2',
+      name: 'Priya Sharma',
+      email: 'priya@voyanta.com',
+      password: hashedPassword,
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&h=400&q=80',
+      preferences: JSON.stringify({
+        preferredVibes: ['Beaches & Coastlines', 'Café / Slow Travel', 'Culture & Heritage'],
+        defaultBudget: 'Moderate',
+        travelStyle: 'Relaxed'
+      })
+    }
+  });
 
-  // 2. Seed Destinations (from dataset.json)
+  console.log(`Demo users ready: u1 (${demoUser.name}) and u2 (${demoUser2.name})`);
+
+  // 2. Seed Destinations with readable slug IDs (e.g. dest_coorg_kodagu, dest_spiti_valley)
+  const slugify = (name) => 'dest_' + name.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
   for (const d of rawDataset.destinations) {
-    await prisma.destination.upsert({
-      where: { name: d.name },
-      update: {
-        state: d.state || 'India',
-        country: 'India',
-        description: d.description,
-        imageUrl: d.imageUrl,
-        vibes: JSON.stringify(d.vibes),
-        travelStyles: d.travelStyles.join(', '),
-        bestSeasons: d.bestSeasons.join(', '),
-        budgetTier: d.budgetTier,
-        avgCostPerDay: d.avgCostPerDay,
-        coordinates: d.coordinates,
-        weatherCity: d.weatherCity,
-        rating: d.rating,
-        isTrending: d.isTrending
-      },
-      create: {
+    const destId = slugify(d.name);
+    await prisma.destination.create({
+      data: {
+        id: destId,
         name: d.name,
         state: d.state || 'India',
         country: 'India',
@@ -490,37 +504,49 @@ async function main() {
       }
     });
   }
-  console.log(`Successfully verified ${rawDataset.destinations.length} Indian destinations.`);
+  console.log(`Successfully seeded ${rawDataset.destinations.length} Indian destinations with clean IDs.`);
 
-  // 3. Seed Hotels
-  await prisma.hotel.deleteMany({});
+  // 3. Seed Hotels with hotel_1, hotel_2...
+  let hCount = 1;
   for (const h of HOTELS_DATA) {
-    await prisma.hotel.create({ data: h });
+    await prisma.hotel.create({
+      data: {
+        id: `hotel_${hCount++}`,
+        ...h
+      }
+    });
   }
   console.log(`Successfully seeded ${HOTELS_DATA.length} curated hotels across India.`);
 
-  // 4. Seed Vehicles
-  await prisma.vehicle.deleteMany({});
+  // 4. Seed Vehicles with veh_1, veh_2...
+  let vCount = 1;
   for (const v of VEHICLES_DATA) {
-    await prisma.vehicle.create({ data: v });
+    await prisma.vehicle.create({
+      data: {
+        id: `veh_${vCount++}`,
+        ...v
+      }
+    });
   }
   console.log(`Successfully seeded ${VEHICLES_DATA.length} vehicle rental options.`);
 
-  // 5. Seed Reviews
-  await prisma.review.deleteMany({});
+  // 5. Seed Reviews with rev_1, rev_2...
+  let rCount = 1;
   for (const r of REVIEWS_DATA) {
-    await prisma.review.create({ data: r });
+    await prisma.review.create({
+      data: {
+        id: `rev_${rCount++}`,
+        ...r
+      }
+    });
   }
   console.log(`Successfully seeded ${REVIEWS_DATA.length} verified traveler reviews.`);
 
-  // 6. Seed Authentic Indian Saved Trip for Alex (Leh-Ladakh 4-Day High-Altitude Expedition)
-  await prisma.trip.deleteMany({
-    where: { userId: demoUser.id }
-  });
-
+  // 6. Seed Authentic Indian Saved Trip for Alex (Trip ID: trip_1)
   const trip = await prisma.trip.create({
     data: {
-      userId: demoUser.id,
+      id: 'trip_1',
+      userId: 'u1',
       destinationName: 'Leh-Ladakh',
       destinationState: 'Ladakh',
       destinationCountry: 'India',
@@ -740,6 +766,29 @@ async function main() {
   });
 
   console.log(`Created sample trip: ${trip.destinationName} with expenses & packing checklist (Trip ID: ${trip.id})`);
+
+  // 7. Seed Wishlist items with intuitive IDs (wish_1, wish_2, wish_3)
+  const destCoorg = await prisma.destination.findFirst({ where: { name: 'Coorg (Kodagu)' } });
+  const destSpiti = await prisma.destination.findFirst({ where: { name: 'Spiti Valley' } });
+  const destGoa = await prisma.destination.findFirst({ where: { name: 'Goa (North & South)' } });
+
+  if (destCoorg) {
+    await prisma.wishlist.create({
+      data: { id: 'wish_1', userId: 'u1', destinationId: destCoorg.id }
+    });
+  }
+  if (destSpiti) {
+    await prisma.wishlist.create({
+      data: { id: 'wish_2', userId: 'u1', destinationId: destSpiti.id }
+    });
+  }
+  if (destGoa) {
+    await prisma.wishlist.create({
+      data: { id: 'wish_3', userId: 'u2', destinationId: destGoa.id }
+    });
+  }
+  console.log('Seeded 3 Wishlist items with clean IDs (wish_1: u1, wish_2: u1, wish_3: u2)');
+
   console.log('--- Database Seeding Complete ---');
 }
 
