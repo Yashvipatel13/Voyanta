@@ -52,8 +52,17 @@ export const toggleWishlist = async (req, res) => {
       });
       return res.json({ saved: false, message: 'Removed from wishlist.' });
     } else {
+      const count = await prisma.wishlist.count();
+      let wishNum = count + 1;
+      let customWishId = `wish_${wishNum}`;
+      while (await prisma.wishlist.findUnique({ where: { id: customWishId } })) {
+        wishNum++;
+        customWishId = `wish_${wishNum}`;
+      }
+
       const created = await prisma.wishlist.create({
         data: {
+          id: customWishId,
           userId,
           destinationId
         }
