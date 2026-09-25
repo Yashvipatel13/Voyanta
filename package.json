@@ -1,0 +1,17 @@
+{
+  "name": "voyanta",
+  "version": "1.0.0",
+  "description": "Voyanta — AI & Vibe-Powered Travel App with Random Forest ML, Prisma, and Supabase",
+  "scripts": {
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"npm run server\" \"npm run client\"",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "seed": "npm --prefix server run prisma:seed",
+    "ml:test": "npm --prefix server run ml:test"
+  },
+  "author": "Voyanta Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

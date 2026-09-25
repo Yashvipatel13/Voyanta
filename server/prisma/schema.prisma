@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          String         @default("traveler") // traveler, admin
+  avatar        String?
+  preferences   String?        // JSON string of travel preferences
+  trips         Trip[]
+  wishlists     Wishlist[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Destination {
+  id             String     @id @default(cuid())
+  name           String     @unique
+  state          String     @default("India")
+  country        String     @default("India")
+  description    String
+  imageUrl       String
+  vibes          String     // JSON array string of vibe tags
+  travelStyles   String     // Comma separated
+  bestSeasons    String     // Comma separated
+  budgetTier     String     // Economy, Moderate, Luxury
+  budgetLevel    Int        @default(2) // 1: Economy, 2: Moderate, 3: Luxury
+  avgCostPerDay  Float      // In INR (₹)
+  coordinates    String     // "lat,lng"
+  weatherCity    String
+  rating         Float      @default(4.8)
+  isTrending     Boolean    @default(false)
+  highlights     String?    // JSON array of top sights/activities
+  wishlists      Wishlist[]
+  createdAt      DateTime   @default(now())
+}
+
+model Hotel {
+  id              String   @id @default(cuid())
+  name            String
+  destinationName String
+  city            String
+  state           String
+  location        String
+  pricePerNight   Float    // In INR (₹)
+  rating          Float    @default(4.5)
+  reviews         Int      @default(100)
+  amenities       String   // JSON array string
+  category        String   // budget, midrange, luxury
+  imageUrl        String
+  createdAt       DateTime @default(now())
+}
+
+model Vehicle {
+  id            String   @id @default(cuid())
+  name          String
+  city          String
+  state         String
+  type          String   // Scooter/Bike, Sedan, SUV, Self-drive, Hatchback
+  pricePerDay   Float    // In INR (₹)
+  rating        Float    @default(4.7)
+  capacity      Int      @default(4)
+  transmission  String   @default("Manual") // Manual, Automatic
+  imageUrl      String
+  fuelType      String   @default("Petrol")
+  createdAt     DateTime @default(now())
+}
+
+model Trip {
+  id                 String         @id @default(cuid())
+  userId             String
+  user               User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationName    String
+  destinationState   String         @default("India")
+  destinationCountry String         @default("India")
+  durationDays       Int
+  travelers          Int            @default(1)
+  targetBudget       Float          // In INR (₹)
+  totalEstimatedCost Float          @default(0)
+  budgetTransport    Float          @default(0)
+  budgetStay         Float          @default(0)
+  budgetFood         Float          @default(0)
+  budgetActivities   Float          @default(0)
+  travelStyle        String
+  vibes              String         // Comma separated vibe tags
+  status             String         @default("Planned") // Planned, In Progress, Completed
+  notes              String?
+  itineraryDays      ItineraryDay[]
+  expenses           Expense[]
+  checklists         Checklist[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model ItineraryDay {
+  id         String     @id @default(cuid())
+  tripId     String
+  trip       Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  dayNumber  Int
+  title      String
+  activities Activity[]
+}
+
+model Activity {
+  id            String       @id @default(cuid())
+  dayId         String
+  day           ItineraryDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  timeSlot      String       // "Morning (9:00 AM)", "Afternoon (1:00 PM)", etc.
+  title         String
+  description   String
+  location      String
+  coordinates   String?      // "lat,lng"
+  estimatedCost Float        @default(0) // In INR (₹)
+  isOutdoor     Boolean      @default(true)
+  weatherAlert  String?
+  replacedWith  String?
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  tripId      String
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  category    String   // Transport, Stay, Food, Activities, Shopping, Miscellaneous
+  amount      Float    // In INR (₹)
+  description String
+  date        String
+  createdAt   DateTime @default(now())
+}
+
+model Checklist {
+  id        String   @id @default(cuid())
+  tripId    String
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  item      String
+  category  String   // Documents, Clothing, Electronics, Medical, Essentials
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("info") // info, reminder, alert, budget, weather
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id              String   @id @default(cuid())
+  destinationName String
+  userName        String
+  userAvatar      String?
+  rating          Float    @default(5.0)
+  comment         String
+  createdAt       DateTime @default(now())
+}
+
+model Wishlist {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, destinationId])
+}
